@@ -27,10 +27,9 @@ const params = new URLSearchParams(window.location.search);
 
 const table = document.getElementById('params');
 for (const [k, v] of params) {
-  table.insertAdjacentHTML('beforeend', '<tr><td></td><td></td></tr>');
-  const cells = table.lastElementChild.children;
-  cells[0].textContent = k;
-  cells[1].textContent = v || '(empty)';
+  const row = table.insertRow();
+  row.insertCell().textContent = k;
+  row.insertCell().textContent = v || '(empty)';
 }
 const missing = ['qrid', 'sspp_rsource', 'sspp_host_url'].filter(k => !params.get(k));
 if (missing.length) {
