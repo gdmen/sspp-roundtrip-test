@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Outside survey (round-trip test)</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  td { border: 1px solid #ccc; padding: 4px 6px; word-break: break-all; }
+  .bad { color: #b00; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>Outside survey (test)</h1>
+<div id="warn"></div>
+<p>Params received:</p>
+<table id="params"></table>
+<p><label>Test answer: <input id="answer" value="hello"></label></p>
+<button id="finish">Finish and return to Qualtrics</button>
+<p id="dest"></p>
+
+<script>
+// Set this to the Qualtrics anonymous link of the test survey after you upload it.
+const QUALTRICS_FINISH_URL = 'https://survey.iad1.qualtrics.com/jfe/form/SV_REPLACE_ME';
+
+const params = new URLSearchParams(window.location.search);
+
+const table = document.getElementById('params');
+for (const [k, v] of params) {
+  table.insertAdjacentHTML('beforeend', '<tr><td></td><td></td></tr>');
+  const cells = table.lastElementChild.children;
+  cells[0].textContent = k;
+  cells[1].textContent = v || '(empty)';
+}
+const missing = ['qrid', 'sspp_rsource', 'sspp_host_url'].filter(k => !params.get(k));
+if (missing.length) {
+  document.getElementById('warn').innerHTML =
+    '<p class="bad">Missing or empty: ' + missing.join(', ') + '</p>';
+}
+
+function finishUrl() {
+  const back = new URLSearchParams(params);
+  back.set('outside_answer', document.getElementById('answer').value);
+  const sep = QUALTRICS_FINISH_URL.indexOf('?') === -1 ? '?' : '&';
+  return QUALTRICS_FINISH_URL + sep + back.toString();
+}
+
+document.getElementById('finish').addEventListener('click', () => {
+  const url = finishUrl();
+  document.getElementById('dest').textContent = 'Redirecting to: ' + url;
+  setTimeout(() => { window.location.href = url; }, 1500);
+});
+</script>
+</body>
+</html>
